@@ -1,0 +1,5 @@
+
+requests
+
+# for aws
+boto3==1.8.9
