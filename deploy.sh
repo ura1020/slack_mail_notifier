@@ -18,7 +18,7 @@ zip -9 -x "*.git*" -x "*boto3*" -x "*botocore*" -x "*$archives_dir*" -r $archive
 aws s3 cp $archives_dir/$resource_name s3://$s3_bucket/ \
   --acl bucket-owner-full-control
 
-sed -e "s/{SLACK_TOKEN}/${SLACK_TOKEN}/g" -e "s/{SLACK_CHANNEL}/${SLACK_CHANNEL}/g" -e "s/{TO_ADDRESS}/${TO_ADDRESS}/g" -e "s/{SOURCE_ADDRESS}/${SOURCE_ADDRESS}/g" -e "s/{S3_KEY}/${resource_name}/g" cloudformation.tpl > cloudformation.yml
+sed -e "s/{SLACK_TOKEN}/${SLACK_TOKEN}/g" -e "s/{SLACK_CHANNEL}/${SLACK_CHANNEL}/g" -e "s/{TO_ADDRESS}/${TO_ADDRESS}/g" -e "s/{SOURCE_ADDRESS}/${SOURCE_ADDRESS}/g" -e "s/{S3_BUCKET}/${s3_bucket}/g" -e "s/{S3_KEY}/${resource_name}/g" cloudformation.tpl > cloudformation.yml
 
 # aws cloudformation delete-stack \
 #   --stack-name ${deploy_name}
