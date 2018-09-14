@@ -1,7 +1,9 @@
+archives/
 boto3/
 botocore/
 certifi/
 chardet/
+cloudformation.yml
 dateutil/
 destination.json
 docutils/
@@ -10,6 +12,7 @@ jmespath/
 message.json
 requests/
 s3transfer/
+setup_dynamo_table.sh
 six.py
 urllib3/
 

@@ -1,12 +1,10 @@
 #!/bin/sh
 
-deploy_name=slack_mail_notifier
+deploy_name=SlackMailNotifier
 s3_bucket=${S3_BUCKET}
 archives_dir=archives
 
 cd `dirname $0`
-
-#### Lambda
 
 # アーカイブ
 mkdir $archives_dir || true
@@ -20,12 +18,21 @@ aws s3 cp $archives_dir/$resource_name s3://$s3_bucket/ \
 
 sed -e "s/{SLACK_TOKEN}/${SLACK_TOKEN}/g" -e "s/{SLACK_CHANNEL}/${SLACK_CHANNEL}/g" -e "s/{TO_ADDRESS}/${TO_ADDRESS}/g" -e "s/{SOURCE_ADDRESS}/${SOURCE_ADDRESS}/g" -e "s/{S3_BUCKET}/${s3_bucket}/g" -e "s/{S3_KEY}/${resource_name}/g" cloudformation.tpl > cloudformation.yml
 
+# デプロイ
 # aws cloudformation delete-stack \
 #   --stack-name ${deploy_name}
 
-# デプロイ
-aws cloudformation create-stack \
-  --stack-name ${deploy_name} \
-  --template-body file://cloudformation.yml \
-  --capabilities CAPABILITY_IAM
+# aws cloudformation create-stack \
+#   --stack-name ${deploy_name} \
+#   --template-body file://cloudformation.yml \
+#   --capabilities CAPABILITY_IAM
 
+# aws cloudformation update-stack \
+#   --stack-name ${deploy_name} \
+#   --template-body file://cloudformation.yml \
+#   --capabilities CAPABILITY_IAM
+
+aws cloudformation deploy \
+  --stack-name ${deploy_name} \
+  --template cloudformation.yml \
+  --capabilities CAPABILITY_IAM

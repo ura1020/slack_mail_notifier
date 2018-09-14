@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Scheduled Lambda Sample'
+Description: 'Slack Mail Notifier'
 Parameters:
   SlackToken:
     Type: String
@@ -20,6 +20,21 @@ Parameters:
     Type: String
     Default: {S3_KEY}
 Resources:
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: 'release.SlackMailNotifierUnreads'
+      AttributeDefinitions:
+        -
+          AttributeName: "envChannelID"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "envChannelID"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -43,6 +58,9 @@ Resources:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
+            - dynamodb:DescribeTable
+            - dynamodb:UpdateTable
+            - ses:SendEmail
             Resource: '*'
   LambdaFunction:
     Type: AWS::Lambda::Function
@@ -55,16 +73,18 @@ Resources:
       Runtime: python3.6
       MemorySize: 128
       Timeout: 30
-      Description: 'Scheduled Lambda Sample (python3 urlopen)'
+      Description: 'Slack Mail Notifier'
       Environment:
         Variables:
           'SLACK_TOKEN': !Ref 'SlackToken'
           'SLACK_CHANNEL': !Ref 'SlackChannel'
           'TO_ADDRESS': !Ref 'ToAddress'
           'SOURCE_ADDRESS': !Ref 'SourceAddress'
+          'ENV': 'release'
+          'DEBUG': ''
       Tags:
       - Key: Name
-        Value: 'ScheduledLambdaSample'
+        Value: 'SlackMailNotifier'
       - Key: CloudformationArn
         Value: !Ref 'AWS::StackId'
   ScheduledRule:
