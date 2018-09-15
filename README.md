@@ -1,7 +1,8 @@
 # slack_mail_notifier
 
-    Slack の未読メッセージをメール通知してくれるSlack App
-    メールサーバはAmazon SESの想定
+    Slack の未読メッセージをメール通知するSlack App
+    メールサーバはAmazon SES
+    通知間隔は1時間
     CloudWatch Eventで定期実行の想定
 
 # 設定手順
@@ -21,10 +22,24 @@
     - SOURCE_ADDRESS
       通知元Eメールアドレス(AWS SESで要導通)
 
+# 要素技術
+
+    - Python3.6 ... 実装
+    - Slack API ... メッセージ取得
+    - AWS Lambda ... 実行サーバ
+    - AWS SES ... メール通知
+    - AWS CloudWatch Event ... 定期実行
+    - AWS DynamoDB ... 状態保存
+    - AWS CloudFormation ... デプロイ
+    - Vagrant ... 開発
+    - Docker ... 開発
+    - Ramen ... 癒やし
 
 # ToDo
 
-    - 連続通知抑止
+    - チャンネルURL含める
+    - メールのテンプレート化
+    - 複数チャンネル対応?
 
 # 備考
 
