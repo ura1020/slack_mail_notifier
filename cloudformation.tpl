@@ -23,7 +23,7 @@ Resources:
   DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: 'release.SlackMailNotifierUnreads'
+      TableName: 'release.SlackMailNotifier.Unreads'
       AttributeDefinitions:
         -
           AttributeName: "envChannelID"
@@ -58,8 +58,8 @@ Resources:
             - logs:CreateLogGroup
             - logs:CreateLogStream
             - logs:PutLogEvents
-            - dynamodb:DescribeTable
-            - dynamodb:UpdateTable
+            - dynamodb:GetItem
+            - dynamodb:PutItem
             - ses:SendEmail
             Resource: '*'
   LambdaFunction:
@@ -72,7 +72,7 @@ Resources:
         S3Key: !Ref 'S3Key'
       Runtime: python3.6
       MemorySize: 128
-      Timeout: 30
+      Timeout: 5
       Description: 'Slack Mail Notifier'
       Environment:
         Variables:
