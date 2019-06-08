@@ -1,9 +1,7 @@
 # slack_mail_notifier
 
     Slack の未読メッセージをメール通知するSlack App
-    メールサーバはAmazon SES
     通知間隔は1時間
-    CloudWatch Eventで定期実行の想定
 
 # 設定手順
     - Slack Appに登録
@@ -37,6 +35,7 @@
 
 # ToDo
 
+    - 未読1時間以上での通知に仕様変更
     - チャンネルURL含める
     - メールのテンプレート化
     - 複数チャンネル対応?
