@@ -9,7 +9,7 @@ def awsSesClient():
   return boto3.client("ses",region_name=AWS_REGION)
 
 def awsDynamoTable(env,key):
-  # ワンソース優先にした。ちょっとトリッキーか
+  # トリッキーだけどワンソース優先
   tablename = "%s.SlackMailNotifier.Unreads" % env
   pkname = "envChannelID"
 
@@ -53,8 +53,11 @@ def lambda_handler(event, context):
     return result if result["ok"] else False
 
   # チャンネルのメッセージ履歴取得
+  from datetime import datetime, timedelta
+  n = datetime.now() - timedelta(hours=1)
+  latest = n.timestamp()
   result = getSlackApi(
-    url="https://slack.com/api/channels.history?token=%s&channel=%s&unreads=true" % (token,channel),
+    url="https://slack.com/api/channels.history?token=%s&channel=%s&latest=%s&unreads=true" % (token,channel,latest),
     response={"messages":[],"unread_count_display":0})
   if not result:
     return {"statusCode": 502} # Bad Gateway
@@ -98,9 +101,10 @@ def lambda_handler(event, context):
   table["put"]({"client_msg_id":unreads[0]["client_msg_id"]})
 
   def sendEmail(unreads):
-    def json2str(source):
-      import json
-      return json.dumps(source,ensure_ascii=False,indent=4)
+    def encode(source):
+      # import json
+      # return json.dumps(source,ensure_ascii=False,indent=4)
+      return "\n".join(["%s: %s" % (message["name"],message["text"]) for message in source])
 
     from datetime import datetime, timedelta, timezone
     jst = timezone(timedelta(hours=+9), 'JST')
@@ -115,12 +119,12 @@ def lambda_handler(event, context):
       },
       Message={
           'Subject': {
-              'Data': "Slack unread messagers at %s" % str_now,
+              'Data': "[SLACK] %s" % str_now,
               'Charset': CHARSET
           },
           'Body': {
               'Text': {
-                  'Data': json2str(unreads),
+                  'Data': encode(unreads),
                   'Charset': CHARSET
               }
           }
